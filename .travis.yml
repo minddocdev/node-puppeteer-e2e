@@ -1,0 +1,6 @@
+---
+services:
+  - docker
+
+script:
+  - docker run -it --rm -v "${PWD}/Dockerfile:/Dockerfile" redcoolbeans/dockerlint
