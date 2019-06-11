@@ -1,6 +1,6 @@
 # `node-puppeteer-e2e`
 
-> Docker Image with Node.js, Java and Google Chrome for automated e2e testing
+> Docker Image with Node.js, and Puppeteer for automated e2e testing
 
 This Docker image is created to easily execute automated end-to-end tests with Puppeteer in a container or in your CI pipeline.
 
