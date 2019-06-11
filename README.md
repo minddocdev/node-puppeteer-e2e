@@ -8,10 +8,10 @@ It has Node.js, NPM, Yarn, and Puppeteer installed:
 
 ```
 $ docker run -it minddocdev/node-puppeteer-e2e
-root@c0ff3e:/# node --version
-v10.15.3
-root@c0ff3e:/# npm --version
-6.4.1
+minddocdev@a43b9787b9c2:/app$ npm --version
+6.9.0
+minddocdev@a43b9787b9c2:/app$ node --version
+v10.16.0
 ```
 
 [![Build Status on the master branch](https://travis-ci.org/minddocdev/node-puppeteer-e2e.svg?branch=master)](https://travis-ci.org/minddocdev/node-puppeteer-e2e)
