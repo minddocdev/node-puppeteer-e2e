@@ -3,7 +3,7 @@
 # ---------------------------------------------------------- #
 # image:    node-puppeteer-e2e                               #
 # name:     minddocdev/node-puppeteer-e2e                    #
-# repo:     https://github.com/mind-doc/node-puppeteer-e2e   #
+# repo:     https://github.com/minddocdev/node-puppeteer-e2e   #
 # authors:  development@minddoc.com                          #
 # ---------------------------------------------------------- #
 
@@ -24,22 +24,10 @@ RUN apt-get update && \
 
 ENV NODE_PATH="/usr/local/share/.config/yarn/global/node_modules:${NODE_PATH}"
 
-RUN groupadd -r minddocdev && useradd -r -g minddocdev -G audio,video minddocdev
-
 ENV LANG="C.UTF-8"
 
 WORKDIR /app
 
-# Run everything after as non-privileged user
-RUN mkdir -p /home/minddocdev \
-  && chown -R minddocdev:minddocdev /home/minddocdev \
-  && chown -R minddocdev:minddocdev /usr/local/share/.config/yarn/global/node_modules \
-  && chown -R minddocdev:minddocdev /app
-
-# Switch to non-privileged user
-USER minddocdev
-
 ENTRYPOINT ["dumb-init", "--"]
 
-# CMD ["node", "index.js"]
 CMD ["/bin/bash"]
