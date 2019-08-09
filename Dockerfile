@@ -3,11 +3,11 @@
 # ---------------------------------------------------------- #
 # image:    node-puppeteer-e2e                               #
 # name:     minddocdev/node-puppeteer-e2e                    #
-# repo:     https://github.com/minddocdev/node-puppeteer-e2e   #
+# repo:     https://github.com/minddocdev/node-puppeteer-e2e #
 # authors:  development@minddoc.com                          #
 # ---------------------------------------------------------- #
 
-FROM node:10-slim
+FROM node:12.4.0-alpine
 LABEL maintainer="development@minddoc.com"
 
 # Install dependencies required to run headless chrome / puppeteer
