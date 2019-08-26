@@ -12,32 +12,32 @@ FROM minddocdev/node-alpine:latest
 USER root
 
 ENV CHROME_BIN="/usr/bin/chromium-browser"
+ENV CHROME_PATH="/usr/lib/chromium/"
 ENV NODE_ENV="production"
 ENV LANG="C.UTF-8"
 
-# Installs latest Chromium (76) package.
-RUN apk add --no-cache \
-  chromium \
-  nss \
-  freetype \
-  freetype-dev \
-  harfbuzz \
+# Installs latest Chromium package.
+RUN echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories \
+  && echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories \
+  && apk add --no-cache \
+  chromium@edge \
+  harfbuzz@edge \
+  nss@edge \
+  freetype@edge \
+  ttf-freefont@edge \
   ca-certificates \
-  ttf-freefont \
   nodejs \
-  yarn
+  yarn \
+  && rm -rf /var/cache/* \
+  && mkdir /var/cache/apk
 
-# Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+# Add Chrome as a user
+RUN mkdir -p /usr/src/app \
+  && adduser -D chrome \
+  && chown -R chrome:chrome /usr/src/app
+# Run Chrome as non-privileged
+USER chrome
+WORKDIR /usr/src/app
 
-# Puppeteer v1.17.0 works with Chromium 76.
-RUN yarn add puppeteer@1.17.0
-
-# Add user so we don't need --no-sandbox.
-RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
-  && mkdir -p /home/pptruser/Downloads /app \
-  && chown -R pptruser:pptruser /home/pptruser \
-  && chown -R pptruser:pptruser /app
-
-# Run everything after as non-privileged user.
-USER pptruser
+# Autorun chrome headless with no GPU
+ENTRYPOINT ["chromium-browser", "--headless", "--disable-gpu", "--disable-software-rasterizer", "--disable-dev-shm-usage"]
