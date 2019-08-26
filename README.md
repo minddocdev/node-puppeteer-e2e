@@ -1,6 +1,6 @@
 # `node-puppeteer-e2e`
 
-> Docker Alpine Image with Node.js, and Puppeteer for automated e2e testing
+> Docker Slim Image with Node.js, and Puppeteer for automated e2e testing
 
 This Docker image is created to easily execute automated end-to-end tests with Puppeteer in a container or in your CI pipeline.
 

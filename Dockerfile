@@ -7,37 +7,25 @@
 # authors:  development@minddoc.com                          #
 # ---------------------------------------------------------- #
 
-FROM minddocdev/node-alpine:latest
+FROM minddocdev/node-slim:latest
+# Install dependencies required to run headless chrome / puppeteer
+RUN apt-get update && \
+  apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 \
+  libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
+  libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
+  libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
+  ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget && \
+  wget https://github.com/Yelp/dumb-init/releases/download/v1.2.1/dumb-init_1.2.1_amd64.deb && \
+  dpkg -i dumb-init_*.deb && rm -f dumb-init_*.deb && \
+  apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/* && \
+  yarn global add puppeteer@1.17.0 && yarn cache clean
 
-USER root
+ENV NODE_PATH="/usr/local/share/.config/yarn/global/node_modules:${NODE_PATH}"
 
-ENV CHROME_BIN="/usr/bin/chromium-browser"
-ENV CHROME_PATH="/usr/lib/chromium/"
-ENV NODE_ENV="production"
 ENV LANG="C.UTF-8"
 
-# Installs latest Chromium package.
-RUN echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories \
-  && echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories \
-  && apk add --no-cache \
-  chromium@edge \
-  harfbuzz@edge \
-  nss@edge \
-  freetype@edge \
-  ttf-freefont@edge \
-  ca-certificates \
-  nodejs \
-  yarn \
-  && rm -rf /var/cache/* \
-  && mkdir /var/cache/apk
+WORKDIR /app
 
-# Add Chrome as a user
-RUN mkdir -p /usr/src/app \
-  && adduser -D chrome \
-  && chown -R chrome:chrome /usr/src/app
-# Run Chrome as non-privileged
-USER chrome
-WORKDIR /usr/src/app
+ENTRYPOINT ["dumb-init", "--"]
 
-# Autorun chrome headless with no GPU
-ENTRYPOINT ["chromium-browser", "--headless", "--disable-gpu", "--disable-software-rasterizer", "--disable-dev-shm-usage"]
+CMD ["/bin/bash"]
