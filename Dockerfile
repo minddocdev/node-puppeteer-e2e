@@ -9,35 +9,35 @@
 
 FROM minddocdev/node-alpine:latest
 
+USER root
+
 ENV CHROME_BIN="/usr/bin/chromium-browser"
 ENV NODE_ENV="production"
 ENV LANG="C.UTF-8"
 
-# Install dependencies required to run headless chrome / puppeteer without downloading Chromium
-RUN set -x \
-    && apk update \
-    && apk upgrade \
-    && apk add --no-cache \
-    dumb-init \
-    udev \
-    ttf-freefont \
-    chromium \
-    && npm install puppeteer-core@1.10.0 --silent \
-      \
-      # Cleanup
-      && apk del --no-cache make gcc g++ python binutils-gold gnupg libstdc++ \
-      && rm -rf /usr/include \
-      && rm -rf /var/cache/apk/* /root/.node-gyp /usr/share/man /tmp/* \
-      && echo
+# Installs latest Chromium (76) package.
+RUN apk add --no-cache \
+  chromium \
+  nss \
+  freetype \
+  freetype-dev \
+  harfbuzz \
+  ca-certificates \
+  ttf-freefont \
+  nodejs \
+  yarn
 
-COPY . /app
+# Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
-RUN cd /app && npm install --quiet
+# Puppeteer v1.17.0 works with Chromium 76.
+RUN yarn add puppeteer@1.17.0
 
-EXPOSE 3000
+# Add user so we don't need --no-sandbox.
+RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
+  && mkdir -p /home/pptruser/Downloads /app \
+  && chown -R pptruser:pptruser /home/pptruser \
+  && chown -R pptruser:pptruser /app
 
-WORKDIR /app
-
-ENTRYPOINT ["/usr/bin/dumb-init"]
-
-CMD npm run start
+# Run everything after as non-privileged user.
+USER pptruser
