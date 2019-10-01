@@ -22,6 +22,8 @@ RUN apt-get update && \
 
 ENV NODE_PATH="/usr/local/share/.config/yarn/global/node_modules:${NODE_PATH}"
 
+RUN npm install -g yarn
+
 ENV LANG="C.UTF-8"
 
 WORKDIR /app
